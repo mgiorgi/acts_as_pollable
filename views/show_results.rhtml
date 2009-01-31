@@ -1,0 +1,9 @@
+    Question: <i><%= question %></i><p/>
+    <p>
+    <% answers.each do |answer| %>
+      <%= answer[:description] %>: <%= pluralize answer[:votes], 'vote' -%>.
+      <br/>
+    <% end %>
+    </p>
+
+    Total votes: <%= votes_total %>

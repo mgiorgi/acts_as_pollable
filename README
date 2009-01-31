@@ -1,0 +1,53 @@
+ActsAsPollable
+==============
+
+This plugin allows polls, integrated with your user model, within your application.
+
+Install plugin
+  
+  * Run the generator command:
+
+  ./script/generate acts_as_pollable
+
+  * Update the database, running migration: 
+
+  rake db:migrate 
+
+Create poll
+
+  * To create a poll use the following command:
+
+  ./script/runner vendor/plugins/acts_as_pollable/create_poll.rb
+
+  The script will ask you which are the answers, which is the questions displayed, among other configurations (allows multiple selection, who is allowed to vote: registered users, anonymous, etc.) for the poll.
+
+Show poll in views
+
+   * Insert the poll helper in your view:
+
+      #someview.rhtml (where you want to show the poll)
+      ..
+      <%= poll ( poll_name, { :in_place => true, :redirect_to => some_url, :view_dir => view_directory } ) %>
+      ..
+
+      Where:
+
+          * poll_name. This is the name that identifies the poll to display. This is the only required parameter.
+          * :in_place. Enables AJAX functionality to the poll if it is set to true, otherwise the hole page would be reload while submitting a vote.
+          * :redirect_to. This is an url to redirect after the vote.
+          * :view_dir. If present, it loads the poll views (show_poll, already_vote, user_not_logged, etc) from the directory set by this parameter. Otherwise, all views will be taken from RAILS_APP/vendor/plugins/acts_as_pollable/views.
+
+   * Insert act_as_vote_handler statement in the controller of the view (where the poll helper is used):
+
+      class SomeController
+        
+         acts_as_vote_handler
+        
+        ..
+      end
+
+More Information, improvment & comments
+
+For more information you can visit the following page: http://railshotspot.blogspot.com
+
+Copyright (c) 2009 [name of plugin creator], released under the MIT license
