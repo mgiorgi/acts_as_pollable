@@ -29,7 +29,7 @@ module Mgm
             elsif (!poll.start_date.blank? && poll.start_date > now || !poll.end_date.blank? && poll.end_date < now)
               render :file => "#{view_dir}/poll_outdated.rhtml"
             else
-              poll_question = Poll.find(:first, ["name = ? ", name])
+              poll_question = Poll.find(:first, :conditions => ["name = ? ", name])
               unless poll_question.blank?
                 question = poll_question.description
                 answers = poll_question.options
