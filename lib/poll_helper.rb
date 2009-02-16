@@ -51,7 +51,7 @@ module Mgm
     def poll_results(opthash = { } )
       poll_name = opthash[:poll_name] or poll_name = session[:last_poll]
       view_dir = get_view_dir(opthash[:view_dir])
-      poll_question = Poll.find(:first, ["name = ? ", poll_name]) 
+      poll_question = Poll.find(:first, :conditions => ["name = ? ", poll_name]) 
       unless poll_question.blank?
         question = poll_question.description
         answers = poll_question.options
