@@ -6,8 +6,8 @@ module Mgm
       answer_ids = params[:acts_as_pollable_answer]
       in_place     = params[:in_place]
       redirect     = params[:redirect]
-      target_type     = params[:target_type]
-      target_id     = params[:target_id]
+      target_type     = params[:targetable_type]
+      target_id     = params[:targetable_id]
       view_dir     = get_view_dir(params[:view_dir])
       #change to today.now - question.start_day
       expire_time = 1.year.from_now 
