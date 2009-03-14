@@ -6,6 +6,8 @@ module Mgm
       answer_ids = params[:acts_as_pollable_answer]
       in_place     = params[:in_place]
       redirect     = params[:redirect]
+      target_type     = params[:target_type]
+      target_id     = params[:target_id]
       view_dir     = get_view_dir(params[:view_dir])
       #change to today.now - question.start_day
       expire_time = 1.year.from_now 
@@ -31,6 +33,10 @@ module Mgm
           options.each do |option|
             option.increment! :votes
             answer = PollAnswer.new(:option => option)
+            if target_type && target_id 
+              answer.target_type = target_type
+              answer.target_id = target_id
+            end
             answer.pollable = user if poll.target == Mgm::PollHelper::TARGET_LOGGED_USER || poll.target == Mgm::PollHelper::TARGET_BOTH && !user.blank?
             answer.save!
           end
