@@ -33,9 +33,9 @@ module Mgm
           options.each do |option|
             option.increment! :votes
             answer = PollAnswer.new(:option => option)
-            if target_type && target_id 
-              answer.target_type = target_type
-              answer.target_id = target_id
+            if !target_type.blank? && !target_id.blank?
+              answer.targetable_type = target_type
+              answer.targetable_id = target_id
             end
             answer.pollable = user if poll.target == Mgm::PollHelper::TARGET_LOGGED_USER || poll.target == Mgm::PollHelper::TARGET_BOTH && !user.blank?
             answer.save!
