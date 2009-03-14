@@ -17,6 +17,7 @@ class CreatePolls < ActiveRecord::Migration
     end
     create_table :poll_answers do |ans|
       ans.belongs_to :pollable, :polymorphic => true
+      ans.belongs_to :targetable, :polymorphic => true
       ans.belongs_to :poll_option
       ans.integer :parent_id
     end
