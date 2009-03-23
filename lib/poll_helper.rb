@@ -79,7 +79,7 @@ module Mgm
     def user_has_voted_poll?(poll_name, user, target_type, target_id)
       opts = [poll_name, user.class.to_s, user.id]
       opts += [target_type, target_id] if target_type && target_id
-      !!PollAnswer.first(:include => [ :option => [:poll] ], :conditions => ['polls.name = ? AND poll_answers.pollable_type = ? AND poll_answers.pollable_id = ? ' + (target_type && target_id ? ' AND poll_answers.targetable_type = ? AND poll_answers.targetable_id = ?') , *opts])
+      !!PollAnswer.first(:include => [ :option => [:poll] ], :conditions => ['polls.name = ? AND poll_answers.pollable_type = ? AND poll_answers.pollable_id = ? ' + (target_type && target_id ? ' AND poll_answers.targetable_type = ? AND poll_answers.targetable_id = ?' : '') , *opts])
     end
   
     def user_can_see_poll?(poll, user)
