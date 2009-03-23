@@ -7,6 +7,8 @@ module Mgm
     # Render the poll
     def poll(name, opthash)
       view_dir = get_view_dir(opthash[:view_dir])
+      target_type     = params[:targetable_type]
+      target_id     = params[:targetable_id]
       cookie_name = "acts_as_pollable"
       already_cookie = cookies[cookie_name]
       poll = Poll.find_by_name(name)
@@ -17,7 +19,7 @@ module Mgm
         #poll exists confirmed
         #Now, check user existance
         unless current_user.blank? && poll.target == TARGET_LOGGED_USER
-          logged_user_has_voted = false || user_has_voted_poll?(poll.name, current_user) unless current_user.blank?
+          logged_user_has_voted = false || user_has_voted_poll?(poll.name, current_user, target_type, target_id) unless current_user.blank?
           #Ask if the conditions are met to show the poll
           if user_can_see_poll?(poll, current_user.id)
             cookie_voted = (already_cookie == ["1"] and !opthash[:allow_multiple])
@@ -74,8 +76,10 @@ module Mgm
       poll.target == PollHelper::TARGET_LOGGED_USER || poll.target == PollHelper::TARGET_BOTH && user_logged?    
     end
   
-    def user_has_voted_poll?(poll_name, user)
-      !!PollAnswer.first(:include => [ :option => [:poll] ], :conditions => ['polls.name = ? AND poll_answers.pollable_type = ? AND poll_answers.pollable_id = ?', poll_name, user.class.to_s, user.id])
+    def user_has_voted_poll?(poll_name, user, target_type, target_id)
+      opts = [poll_name, user.class.to_s, user.id]
+      opts += [target_type, target_id] if target_type && target_id
+      !!PollAnswer.first(:include => [ :option => [:poll] ], :conditions => ['polls.name = ? AND poll_answers.pollable_type = ? AND poll_answers.pollable_id = ? ' + (target_type && target_id ? ' AND poll_answers.targetable_type = ? AND poll_answers.targetable_id = ?') , *opts])
     end
   
     def user_can_see_poll?(poll, user)
