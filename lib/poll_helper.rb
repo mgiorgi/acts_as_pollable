@@ -7,8 +7,8 @@ module Mgm
     # Render the poll
     def poll(name, opthash)
       view_dir = get_view_dir(opthash[:view_dir])
-      target_type     = params[:targetable_type]
-      target_id     = params[:targetable_id]
+      target_type     = opthash[:targetable_type]
+      target_id     = opthash[:targetable_id]
       cookie_name = "acts_as_pollable"
       already_cookie = cookies[cookie_name]
       poll = Poll.find_by_name(name)
