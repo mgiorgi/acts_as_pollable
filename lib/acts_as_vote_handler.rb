@@ -8,12 +8,14 @@ module Mgm
       redirect     = params[:redirect]
       target_type     = params[:targetable_type]
       target_id     = params[:targetable_id]
+      pollable_type     = params[:pollable_type]
+      pollable_id     = params[:pollable_id]
       view_dir     = get_view_dir(params[:view_dir])
       #change to today.now - question.start_day
       expire_time = 1.year.from_now 
       #find user model from session
       poll = Poll.find_by_name(poll_name)
-      user = current_user
+      user = pollable_user(pollable_type, pollable_id)
       if user.blank?
         salt = 'acts_as_pollable'
         cookies["acts_as_pollable_#{salt}"] = {:value => "1", :expires => 1.years.from_now, :path => home_path }
@@ -85,6 +87,11 @@ module Mgm
 
   def maximum_votes_exceeded(poll, answer_ids)
     !poll.max_multiple.blank? && answer_ids.length > poll.max_multiple
+  end
+
+  def pollable_user(pollable_type, pollable_id)
+    pollable = pollable_type.to_s.classify.constantize.send(:find, pollable_id)  if pollable_type && pollable_id
+    pollable || current_user
   end
 end# ActsAsPollable
 
