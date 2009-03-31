@@ -21,7 +21,7 @@ module Mgm
       user = pollable_user(pollable_type, pollable_id)
       if user.blank?
         salt = poll.name
-        cookies["acts_as_pollable_#{salt}"] = {:value => "1", :expires => 1.years.from_now, :path => home_path }
+        cookies["acts_as_pollable_#{salt}"] = {:value => "1", :expires => 1.years.from_now }
       end
     
       if poll_name.nil?
