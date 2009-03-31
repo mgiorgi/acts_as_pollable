@@ -29,7 +29,7 @@ module Mgm
           if user_can_see_poll?(poll, user)
             cookie_voted = (already_cookie == "1" and !opthash[:allow_multiple])
             now=Time.now
-            if !user.blank? && cookie_voted
+            if user.blank? && cookie_voted
               render :file => "#{view_dir}/already_voted.rhtml"
             elsif !user.blank? && logged_user_has_voted
               render :file => "#{view_dir}/already_voted.rhtml"
