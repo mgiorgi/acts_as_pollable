@@ -9,7 +9,7 @@ module Mgm
       view_dir = get_view_dir(opthash[:view_dir])
       target_type     = opthash[:targetable_type]
       target_id     = opthash[:targetable_id]
-      cookie_name = "acts_as_pollable"
+      cookie_name = "acts_as_pollable_#{name}"
       already_cookie = cookies[cookie_name]
       poll = Poll.find_by_name(name)
       #Check for poll existance
