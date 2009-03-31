@@ -1,4 +1,7 @@
+require 'logged_user_helper'
 module Mgm
+  include LoggedUserHelper
+
   public
     # Save the vote, render an answer
     def ap_vote_registered
@@ -87,14 +90,6 @@ module Mgm
 
   def maximum_votes_exceeded(poll, answer_ids)
     !poll.max_multiple.blank? && answer_ids.length > poll.max_multiple
-  end
-
-  def pollable_user(pollable_type, pollable_id)
-    if pollable_type && pollable_id
-      pollable = pollable_type.to_s.classify.constantize.send(:find_by_id, pollable_id)
-    else
-      current_user
-    end
   end
 end# ActsAsPollable
 

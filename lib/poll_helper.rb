@@ -1,5 +1,7 @@
+require 'logged_user_helper'
 module Mgm
   module PollHelper
+    include LoggedUserHelper
     TARGET_LOGGED_USER = 1
     TARGET_ANONYMOUS = 2
     TARGET_BOTH = 3
@@ -9,24 +11,27 @@ module Mgm
       view_dir = get_view_dir(opthash[:view_dir])
       target_type     = opthash[:targetable_type]
       target_id     = opthash[:targetable_id]
+      pollable_type     = opthash[:pollable_type]
+      pollable_id     = opthash[:pollable_id]
       cookie_name = "acts_as_pollable_#{name}"
       already_cookie = cookies[cookie_name]
       poll = Poll.find_by_name(name)
+      user = pollable_user(pollable_type, pollable_id)
       #Check for poll existance
       if poll.blank?
         render :file => "#{view_dir}/poll_not_found.rhtml"
       else
         #poll exists confirmed
         #Now, check user existance
-        unless current_user.blank? && poll.target == TARGET_LOGGED_USER
-          logged_user_has_voted = false || user_has_voted_poll?(poll.name, current_user, target_type, target_id) unless current_user.blank?
+        unless user.blank? && poll.target == TARGET_LOGGED_USER
+          logged_user_has_voted = false || user_has_voted_poll?(poll.name, user, target_type, target_id) unless user.blank?
           #Ask if the conditions are met to show the poll
-          if user_can_see_poll?(poll, current_user.id)
+          if user_can_see_poll?(poll, user.id)
             cookie_voted = (already_cookie == ["1"] and !opthash[:allow_multiple])
             now=Time.now
-            if !user_logged? && cookie_voted
+            if !user.blank? && cookie_voted
               render :file => "#{view_dir}/already_voted.rhtml"
-            elsif user_logged? && logged_user_has_voted
+            elsif !user.blank? && logged_user_has_voted
               render :file => "#{view_dir}/already_voted.rhtml"
             elsif (!poll.start_date.blank? && poll.start_date > now || !poll.end_date.blank? && poll.end_date < now)
               render :file => "#{view_dir}/poll_outdated.rhtml"
@@ -67,14 +72,6 @@ module Mgm
     end
   
     private
-  
-    def user_logged?
-      !!current_user
-    end
-  
-    def check_votes_for_logged_user?(poll)
-      poll.target == PollHelper::TARGET_LOGGED_USER || poll.target == PollHelper::TARGET_BOTH && user_logged?    
-    end
   
     def user_has_voted_poll?(poll_name, user, target_type, target_id)
       opts = [poll_name, user.class.to_s, user.id]
