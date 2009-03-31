@@ -19,11 +19,6 @@ module Mgm
       #find user model from session
       poll = Poll.find_by_name(poll_name)
       user = pollable_user(pollable_type, pollable_id)
-      if user.blank?
-        salt = poll.name
-        cookies["acts_as_pollable_#{salt}"] = {:value => "1", :expires => 1.years.from_now }
-      end
-    
       if poll_name.nil?
         render :file => "#{view_dir}/error.rhtml"
       elsif answer_ids.nil?
@@ -31,7 +26,6 @@ module Mgm
       elsif maximum_votes_exceeded(poll, answer_ids)
         render :file => "#{view_dir}/max_votes_exceeded.rhtml"
       else
-      
         # register the vote
         PollOption.transaction do
           options = PollOption.find answer_ids
@@ -46,6 +40,9 @@ module Mgm
             answer.save!
           end
         end
+
+        #save cookie after vote is effective
+        cookies["acts_as_pollable_#{poll.name}"] = {:value => "1", :expires => 1.years.from_now } if user.blank?
         
         # remember this poll as the latest poll voted at
         # to help show results
