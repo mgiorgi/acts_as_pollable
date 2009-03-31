@@ -24,7 +24,7 @@ module Mgm
         #poll exists confirmed
         #Now, check user existance
         unless user.blank? && poll.target == TARGET_LOGGED_USER
-          logged_user_has_voted = false || user_has_voted_poll?(poll.name, user, target_type, target_id) unless user.blank?
+          logged_user_has_voted = user_has_voted_poll?(poll.name, user, target_type, target_id) unless user.blank?
           #Ask if the conditions are met to show the poll
           if user_can_see_poll?(poll, user)
             cookie_voted = (already_cookie == ["1"] and !opthash[:allow_multiple])
