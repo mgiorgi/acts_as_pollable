@@ -90,8 +90,11 @@ module Mgm
   end
 
   def pollable_user(pollable_type, pollable_id)
-    pollable = pollable_type.to_s.classify.constantize.send(:find, pollable_id)  if pollable_type && pollable_id
-    pollable || current_user
+    if pollable_type && pollable_id
+      pollable = pollable_type.to_s.classify.constantize.send(:find, pollable_id)
+    else
+      current_user
+    end
   end
 end# ActsAsPollable
 
