@@ -3,6 +3,7 @@ class CreatePolls < ActiveRecord::Migration
     create_table :polls do |poll|
       poll.string :name
       poll.string :description
+      poll.boolean :enable
       poll.string :type
       poll.boolean :multiple
       poll.integer :max_multiple
