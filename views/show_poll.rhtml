@@ -1,12 +1,12 @@
-<div id="acts_as_pollable_<%=question.name%>">
+<div id="acts_as_pollable_<%= poll.name.gsub(/ /,'_').gsub(/\?/, '') %>">
 
   <%= in_place ?
-       form_remote_tag(:url => url_for(:action =>'ap_vote_registered'), :update => "acts_as_pollable_#{question.name}") :
+       form_remote_tag(:url => url_for(:action =>'ap_vote_registered'), :update => "acts_as_pollable_#{poll.name.gsub(/ /, '_').gsub(/\?/, '')}") :
        form_tag(url_for( :action => 'ap_vote_registered' )) -%>
 
     Question: <i><%= question.description %></i><p/>     
     <p>
-    <% answers.each do |answer| %>
+    <% poll.options.each do |answer| %>
       <%= radio_button_tag 'acts_as_pollable_answer[]', answer[:id] unless question.multiple -%>
       <%= check_box_tag    'acts_as_pollable_answer[]', answer[:id] if question.multiple     -%>
       <%= answer[:description] %>
@@ -14,7 +14,7 @@
     <% end %>
     </p>
 
-    <input type="hidden" name="poll_name" value="<%= poll_name -%>"/>
+    <input type="hidden" name="poll_name" value="<%= poll.name -%>"/>
     <input type="hidden" name="redirect" value="<%= redirect -%>"/>
     <input type="hidden" name="in_place" value="<%= in_place -%>"/>
     <%= submit_tag 'Vote' %>

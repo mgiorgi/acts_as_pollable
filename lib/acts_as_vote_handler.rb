@@ -51,7 +51,7 @@ module Mgm
         # render in-place or redirect
         if !in_place.nil? and in_place=="true"
     render :file => "#{view_dir}/after_vote.rhtml",
-                 :locals => { :poll_name => params[:poll_name], :expire_time =>  expire_time}
+                 :locals => { :poll => poll, :expire_time =>  expire_time}
         else
     logger.info "redirect to #{redirect}"
     redirect_to redirect

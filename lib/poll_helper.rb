@@ -41,7 +41,7 @@ module Mgm
                 question = poll_question.description
                 answers = poll_question.options
                 render :file => "#{view_dir}/show_poll.rhtml",
-                  :locals => { :question => poll_question, :answers => answers, :poll_name => name, :in_place => opthash[:in_place], :redirect => opthash[:redirect] , :view_dir => view_dir}        
+                  :locals => { :poll => poll, :in_place => opthash[:in_place], :redirect => opthash[:redirect] , :view_dir => view_dir}        
               else
                 render :file => "#{view_dir}/poll_not_found.rhtml"
               end
@@ -58,14 +58,14 @@ module Mgm
     def poll_results(opthash = { } )
       poll_name = opthash[:poll_name] or poll_name = session[:last_poll]
       view_dir = get_view_dir(opthash[:view_dir])
-      poll_question = Poll.find(:first, :conditions => ["name = ? ", poll_name]) 
-      unless poll_question.blank?
-        question = poll_question.description
-        answers = poll_question.options
+      poll = Poll.find(:first, :conditions => ["name = ? ", poll_name]) 
+      unless poll.blank?
+        question = poll.description
+        answers = poll.options
         votes_total = 0; 
         answers.each { |a| votes_total += a.votes }
         render :file => "#{view_dir}/show_results.rhtml",
-	      :locals => { :question => question, :answers => answers, :poll_name => poll_name, :votes_total => votes_total}
+	      :locals => { :poll => poll, :votes_total => votes_total}
       else
         render :file => "#{view_dir}/poll_not_found.rhtml"
       end
