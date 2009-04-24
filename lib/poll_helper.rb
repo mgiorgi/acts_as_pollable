@@ -65,7 +65,7 @@ module Mgm
         votes_total = 0; 
         answers.each { |a| votes_total += a.votes }
         render :file => "#{view_dir}/show_results.rhtml",
-	      :locals => { :poll => poll, :votes_total => votes_total}
+	      :locals => { :poll => poll, :votes_total => votes_total }.merge(opthash)
       else
         render :file => "#{view_dir}/poll_not_found.rhtml"
       end
