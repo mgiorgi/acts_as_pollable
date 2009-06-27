@@ -23,7 +23,7 @@ module Mgm
           logged_user_has_voted = user_has_voted_poll?(poll.name, user, target_type, target_id) unless user.blank?
           #Ask if the conditions are met to show the poll
           if user_can_see_poll?(poll, user)
-            cookie_voted = (unlogged_user_voted?(unlogged_user_votes_in_cookies, name) and !opthash[:allow_multiple])
+            cookie_voted = (unlogged_user_voted?(unlogged_user_votes_in_cookies, poll.id) and !opthash[:allow_multiple])
             now=Time.now
             if user.blank? && cookie_voted
               render :file => "#{view_dir}/already_voted.rhtml"
@@ -68,10 +68,10 @@ module Mgm
     end
   
     private
-    def unlogged_user_voted?(list, poll_name)
+    def unlogged_user_voted?(list, poll_id)
       return false if list.blank?
       return true if list.include?(PollConstants::NO_TARGET_SPECIFIED_VOTE)
-      list.include?(poll_name)
+      list.include?(poll_id)
     end
   
     def user_has_voted_poll?(poll_name, user, target_type, target_id)
