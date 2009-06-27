@@ -83,13 +83,13 @@ module Mgm
    
   private
   def add_vote_to_cookies(opts, key)
-    array = target_specified?(opts) ?
+    votes_array = target_specified?(opts) ?
       (cookies_array(key) + [ opts[:targetable_id] ]) : [ PollConstants::NO_TARGET_SPECIFIED_VOTE ]
-    Marshal.dump(array)
+    Marshal.dump(votes_array)
   end
   def cookies_array(key)
     return [] unless cookies[key]
-    Marshal.dump(array)
+    Marshal.dump(cookies[key])
   end
   def get_view_dir(view_dir_param)
     view_dir_param.blank? ? "#{RAILS_ROOT}/vendor/plugins/acts_as_pollable/views" : "#{RAILS_ROOT}/app/views/#{view_dir_param}"
