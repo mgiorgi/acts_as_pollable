@@ -84,7 +84,7 @@ module Mgm
   private
   def add_vote_to_cookies(opts, key)
     array = target_specified?(opts) ?
-      (cookies_array(key) + [ opts[:targeteable_id] ]) : [ PollConstants::NO_TARGET_SPECIFIED_VOTE ]
+      (cookies_array(key) + [ opts[:targetable_id] ]) : [ PollConstants::NO_TARGET_SPECIFIED_VOTE ]
     Marshal.dump(array)
   end
   def cookies_array(key)
