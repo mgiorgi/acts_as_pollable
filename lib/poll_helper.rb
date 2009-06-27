@@ -69,7 +69,7 @@ module Mgm
   
     private
     def unlogged_user_voted?(list, poll_name)
-      return true if list.blank? or list.include?(PollConstants::NO_TARGET_SPECIFIED_VOTE)
+      return true if !list.blank? && list.include?(PollConstants::NO_TARGET_SPECIFIED_VOTE)
       list.include?(poll_name)
     end
   
