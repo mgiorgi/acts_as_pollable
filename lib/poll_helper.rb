@@ -80,9 +80,9 @@ module Mgm
     end
   
     def user_can_see_poll?(poll, user)
-      (poll.target == PollContsants::TARGET_LOGGED_USER && !user.blank?) || \
-      (poll.target == PollContsants::TARGET_ANONYMOUS && user.blank?) || \
-      (poll.target == PollContsants::TARGET_BOTH)  
+      (poll.target == PollConstants::TARGET_LOGGED_USER && !user.blank?) || \
+      (poll.target == PollConstants::TARGET_ANONYMOUS && user.blank?) || \
+      (poll.target == PollConstants::TARGET_BOTH)  
     end
   
     def get_view_dir(view_dir_param)
