@@ -1,11 +1,7 @@
-require 'logged_user_helper'
 module Mgm
   module PollHelper
     include LoggedUserHelper
-    TARGET_LOGGED_USER = 1
-    TARGET_ANONYMOUS = 2
-    TARGET_BOTH = 3
-  
+
     # Render the poll
     def poll(name, opthash)
       view_dir = get_view_dir(opthash[:view_dir])
@@ -14,7 +10,7 @@ module Mgm
       pollable_type     = opthash[:pollable_type]
       pollable_id     = opthash[:pollable_id]
       cookie_name = "acts_as_pollable_#{name}"
-      already_cookie = cookies[cookie_name]
+      unlogged_user_votes_in_cookies = Marshal.load(cookies[cookie_name]) if cookies[cookie_name]
       poll = Poll.find_by_name(name)
       user = pollable_user(pollable_type, pollable_id)
       #Check for poll existance
@@ -23,11 +19,11 @@ module Mgm
       else
         #poll exists confirmed
         #Now, check user existance
-        unless user.blank? && poll.target == TARGET_LOGGED_USER
+        unless user.blank? && poll.target == PollConstants::TARGET_LOGGED_USER
           logged_user_has_voted = user_has_voted_poll?(poll.name, user, target_type, target_id) unless user.blank?
           #Ask if the conditions are met to show the poll
           if user_can_see_poll?(poll, user)
-            cookie_voted = (already_cookie == "1" and !opthash[:allow_multiple])
+            cookie_voted = (unlogged_user_voted?(unlogged_user_votes_in_cookies, name) and !opthash[:allow_multiple])
             now=Time.now
             if user.blank? && cookie_voted
               render :file => "#{view_dir}/already_voted.rhtml"
@@ -72,6 +68,10 @@ module Mgm
     end
   
     private
+    def unlogged_user_voted?(list, poll_name)
+      return true if list.includes?(PollConstants::NO_TARGET_SPECIFIED_VOTE)
+      list.includes?(poll_name)
+    end
   
     def user_has_voted_poll?(poll_name, user, target_type, target_id)
       opts = [poll_name, user.class.to_s, user.id]
@@ -80,9 +80,9 @@ module Mgm
     end
   
     def user_can_see_poll?(poll, user)
-      (poll.target == PollHelper::TARGET_LOGGED_USER && !user.blank?) || \
-      (poll.target == PollHelper::TARGET_ANONYMOUS && user.blank?) || \
-      (poll.target == PollHelper::TARGET_BOTH)  
+      (poll.target == PollContsants::TARGET_LOGGED_USER && !user.blank?) || \
+      (poll.target == PollContsants::TARGET_ANONYMOUS && user.blank?) || \
+      (poll.target == PollContsants::TARGET_BOTH)  
     end
   
     def get_view_dir(view_dir_param)

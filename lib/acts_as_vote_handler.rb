@@ -32,17 +32,18 @@ module Mgm
           options.each do |option|
             option.increment! :votes
             answer = PollAnswer.new(:option => option)
-            if !target_type.blank? && !target_id.blank?
+            if target_specified?(params)
               answer.targetable_type = target_type
               answer.targetable_id = target_id
             end
-            answer.pollable = user if poll.target == Mgm::PollHelper::TARGET_LOGGED_USER || poll.target == Mgm::PollHelper::TARGET_BOTH && !user.blank?
+            answer.pollable = user if poll.target == PollConstants::TARGET_LOGGED_USER || poll.target == PollConstants::TARGET_BOTH && !user.blank?
             answer.save!
           end
         end
 
         #save cookie after vote is effective
-        cookies["acts_as_pollable_#{poll.name}"] = {:value => "1", :expires => 1.years.from_now } if user.blank?
+        vote_key = "acts_as_pollable_#{poll.name}"
+        cookies[vote_key] = {:value => add_vote_to_cookies(params, vote_key), :expires => 1.years.from_now } if user.blank?
         
         # remember this poll as the latest poll voted at
         # to help show results
@@ -51,7 +52,7 @@ module Mgm
         # render in-place or redirect
         if !in_place.nil? and in_place=="true"
     render :file => "#{view_dir}/after_vote.rhtml",
-                 :locals => { :poll => poll, :expire_time =>  expire_time, :targetable_type => target_type.blank? ? nil : target_type, :targetable_id => target_id.blank? ? nil : target_id }
+                 :locals => { :poll => poll, :expire_time =>  expire_time, :targetable_type => target_specified?(params) ? target_type : nil, :targetable_id => target_specified?(params) ?target_id : nil }
         else
     logger.info "redirect to #{redirect}"
     redirect_to redirect
@@ -81,12 +82,24 @@ module Mgm
   end #Acts
    
   private
+  def add_vote_to_cookies(opts, key)
+    array = target_specified?(opts) ?
+      (cookies_array(key) + [ opts[:targeteable_id] ]) : [ PollConstants::NO_TARGET_SPECIFIED_VOTE ]
+    Marshal.dump(array)
+  end
+  def cookies_array(key)
+    return [] unless cookies[key]
+    cookies[key]
+  end
   def get_view_dir(view_dir_param)
     view_dir_param.blank? ? "#{RAILS_ROOT}/vendor/plugins/acts_as_pollable/views" : "#{RAILS_ROOT}/app/views/#{view_dir_param}"
   end
 
   def maximum_votes_exceeded(poll, answer_ids)
     !poll.max_multiple.blank? && answer_ids.length > poll.max_multiple
+  end
+  def target_specified?(opts)
+    !opts[:targetable_type].blank? && !opts[:targetable_id].blank?
   end
 end# ActsAsPollable
 
