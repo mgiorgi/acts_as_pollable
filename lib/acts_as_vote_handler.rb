@@ -89,7 +89,7 @@ module Mgm
   end
   def cookies_array(key)
     return [] unless cookies[key]
-    cookies[key]
+    Marshal.dump(array)
   end
   def get_view_dir(view_dir_param)
     view_dir_param.blank? ? "#{RAILS_ROOT}/vendor/plugins/acts_as_pollable/views" : "#{RAILS_ROOT}/app/views/#{view_dir_param}"
