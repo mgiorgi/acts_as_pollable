@@ -1,0 +1,42 @@
+<style>
+.poll {}
+.poll-option {clear: both;}
+.poll dl {width: 100%; clear: both; border: 0.5em solid #FFFFFF;}
+.poll dl dt {
+    color: #CCCCCC;
+    float: left;
+    text-align: right;
+    width: 4em;
+}
+.poll dl dt strong {color: #404040;}
+.poll dl dd {
+    font-size: 90%;
+    float: left;
+    margin-left: 10px;
+    width: 40em;
+    padding: 0.1em;
+}
+.poll dd div {background: none repeat scroll 0 0 #DADACD; height: 5px;}
+.poll dd div.winner {background: none repeat scroll 0 0 #7FA0B0;}
+.poll p.total {display: block; clear: both; padding-top: 2em; color: #777;}
+</style>
+
+  <div class="poll">
+    <h3><%= poll.description %></h3>
+    <div class="poll-options">
+    <% poll.options.each do |option| %>
+      <dl>
+        <dt>
+          <strong><%= "%.2f%" % (option.relative_votes * 100) %></strong>
+          <br/>
+          (<%= option.votes %>)
+        </dt>
+        <dd>
+          <%= option[:description] %>
+          <div <% if option.winner? %>class="winner"<% end %> style="width: <%= "%.2f%" % (option.relative_votes * 100) %>;">&nbsp;</div>
+        </dd>
+      </dl>
+    <% end %>
+    </div>
+    <p class="total">Total votes: <%= votes_total %></p>
+  </div>

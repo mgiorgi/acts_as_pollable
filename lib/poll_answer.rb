@@ -6,4 +6,5 @@ class PollAnswer < ActiveRecord::Base
   
   named_scope :for_option, lambda { |option_id| { :include=>[:option=>[:poll]], :conditions => ['poll_answers.poll_option_id = ?', option_id]} }
   named_scope :votes, lambda { |poll_id, target_type, target_id| { :include=>[:option=>[:poll]], :conditions => ['polls.id = ? AND poll_answers.targetable_type = ? AND poll_answers.targetable_id = ?', poll_id, target_type, target_id]} }
+  named_scope :of_user, lambda {|user| {:conditions => ["pollable_type=? AND pollable_id=?", user.class.to_s, user.id]}}
 end

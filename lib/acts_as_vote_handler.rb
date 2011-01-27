@@ -5,15 +5,15 @@ module Mgm
   public
     # Save the vote, render an answer
     def ap_vote_registered
-      poll_name    = params[:poll_name]
-      answer_ids = params[:acts_as_pollable_answer]
-      in_place     = params[:in_place]
-      redirect     = params[:redirect]
-      target_type     = params[:targetable_type]
+      poll_name     = params[:poll_name]
+      answer_ids    = params[:acts_as_pollable_answer]
+      in_place      = params[:in_place]
+      redirect      = params[:redirect]
+      target_type   = params[:targetable_type]
       target_id     = params[:targetable_id]
-      pollable_type     = params[:pollable_type]
-      pollable_id     = params[:pollable_id]
-      view_dir     = get_view_dir(params[:view_dir])
+      pollable_type = params[:pollable_type]
+      pollable_id   = params[:pollable_id]
+      view_dir      = get_view_dir(params[:view_dir])
       #change to today.now - question.start_day
       expire_time = 1.year.from_now 
       #find user model from session
@@ -23,6 +23,8 @@ module Mgm
         render :file => "#{view_dir}/error.rhtml"
       elsif answer_ids.nil?
         render :file => "#{view_dir}/no_vote.rhtml"
+      elsif poll.user_voted?(user)
+        render :file => "#{view_dir}/already_voted.rhtml"
       elsif maximum_votes_exceeded(poll, answer_ids)
         render :file => "#{view_dir}/max_votes_exceeded.rhtml"
       else
@@ -51,11 +53,11 @@ module Mgm
         
         # render in-place or redirect
         if !in_place.nil? and in_place=="true"
-    render :file => "#{view_dir}/after_vote.rhtml",
+          render :file => "#{view_dir}/after_vote.rhtml",
                  :locals => { :poll => poll, :expire_time =>  expire_time, :targetable_type => target_specified?(params) ? target_type : nil, :targetable_id => target_specified?(params) ?target_id : nil }
         else
-    logger.info "redirect to #{redirect}"
-    redirect_to redirect
+          logger.info "redirect to #{redirect}"
+          redirect_to redirect
         end
       end
     end  

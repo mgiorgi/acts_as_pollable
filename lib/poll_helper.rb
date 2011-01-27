@@ -4,11 +4,12 @@ module Mgm
 
     # Render the poll
     def poll(name, opthash)
-      view_dir = get_view_dir(opthash[:view_dir])
-      target_type     = opthash[:targetable_type]
-      target_id     = opthash[:targetable_id]
-      pollable_type     = opthash[:pollable_type]
-      pollable_id     = opthash[:pollable_id]
+      view_dir             = get_view_dir(opthash[:view_dir])
+      target_type          = opthash[:targetable_type]
+      target_id            = opthash[:targetable_id]
+      pollable_type        = opthash[:pollable_type]
+      pollable_id          = opthash[:pollable_id]
+      show_results_on_vote = opthash[:show_results_on_vote]
       cookie_name = "acts_as_pollable_#{name}"
       unlogged_user_votes_in_cookies = Marshal.load(cookies[cookie_name]) if cookies[cookie_name]
       poll = Poll.find_by_name(name)
@@ -25,10 +26,13 @@ module Mgm
           if user_can_see_poll?(poll, user)
             cookie_voted = (unlogged_user_voted?(unlogged_user_votes_in_cookies, target_id) and !opthash[:allow_multiple])
             now=Time.now
-            if user.blank? && cookie_voted
-              render :file => "#{view_dir}/already_voted.rhtml"
-            elsif !user.blank? && logged_user_has_voted
-              render :file => "#{view_dir}/already_voted.rhtml"
+            if user.blank? && cookie_voted || !user.blank? && logged_user_has_voted
+              if show_results_on_vote
+                render :file => "#{view_dir}/show_results.rhtml",
+                  :locals => { :poll => poll, :votes_total => poll.votes_total }.merge(opthash)
+              else
+                render :file => "#{view_dir}/already_voted.rhtml"
+              end
             elsif (!poll.start_date.blank? && poll.start_date > now || !poll.end_date.blank? && poll.end_date < now)
               render :file => "#{view_dir}/poll_outdated.rhtml"
             else
@@ -58,10 +62,8 @@ module Mgm
       unless poll.blank?
         question = poll.description
         answers = poll.options
-        votes_total = 0; 
-        answers.each { |a| votes_total += a.votes }
         render :file => "#{view_dir}/show_results.rhtml",
-	      :locals => { :poll => poll, :votes_total => votes_total }.merge(opthash)
+          :locals => { :poll => poll, :votes_total => poll.votes_total }.merge(opthash)
       else
         render :file => "#{view_dir}/poll_not_found.rhtml"
       end
